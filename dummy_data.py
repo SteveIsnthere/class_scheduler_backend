@@ -5,8 +5,8 @@ from database.methods.class_ import post_class, get_one_week_of_classes_of_a_mem
     delete_class
 from database.methods.course import post_course, get_teachers_by_course, get_all_courses, get_students_by_course
 from database.methods.member import get_all_members, get_member, delete_member, post_member
-from database.methods.plan import post_plan, get_plan_by_member
-from database.methods.relation import post_relation, get_all_relations, get_relation_by_member, delete_relation
+from database.methods.plan import post_plan, get_plans_by_member
+from database.methods.relation import post_relation, get_all_relations, get_relations_by_member, delete_relation
 from models.course import Course
 from models.unable_time import UnableTime
 from models.member import Member
@@ -196,8 +196,8 @@ async def generate_dummy_data(db):
     courses = await get_all_courses()
     classes_this_week = await get_one_week_of_classes(0)
 
-
-    d = await get_plan_by_member(members[0]["nickname"])
+    d = await get_plans_by_member(members[0]["nickname"])
 
     await delete_relation(str(relations[0]["_id"]))
     await delete_class(str(classes_this_week[0]["_id"]))
+    await delete_member(members[0]["nickname"])

@@ -1,7 +1,7 @@
 from bson import ObjectId
 from fastapi import HTTPException, status
 from database.methods.member import members_collection_name
-from database.db import db
+from database.db import db, obj_id_to_str
 
 courses_collection_name = "courses"
 
@@ -24,9 +24,8 @@ async def get_members_by_course(course_name: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
 
     teachers = list(db.find_many(members_collection_name, {"relations": {"$elemMatch": {"courseName": course_name}}}))
-    for c in teachers:
-        c["_id"] = str(c["_id"])
-    return teachers
+
+    return obj_id_to_str(teachers)
 
 
 async def get_teachers_by_course(course_name: str):
@@ -34,8 +33,6 @@ async def get_teachers_by_course(course_name: str):
     # check if course exists
     members = await get_members_by_course(course_name)
     teachers = list([m for m in members if m["isTeacher"]])
-    for c in teachers:
-        c["_id"] = str(c["_id"])
     return teachers
 
 
@@ -44,17 +41,13 @@ async def get_students_by_course(course_name: str):
     # check if course exists
     members = await get_members_by_course(course_name)
     students = list([m for m in members if not m["isTeacher"]])
-    for c in students:
-        c["_id"] = str(c["_id"])
     return students
 
 
 async def get_all_courses():
     # get all courses from database
     courses = list(db.find_many(courses_collection_name, {}))
-    for c in courses:
-        c["_id"] = str(c["_id"])
-    return courses
+    return obj_id_to_str(courses)
 
 
 async def find_course_by_name(course_name: str):

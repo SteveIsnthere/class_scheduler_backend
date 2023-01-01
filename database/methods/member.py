@@ -21,6 +21,19 @@ async def delete_member(member_nickname: str):
     # check if member exists
     if not db.find_one(members_collection_name, {"nickname": member_nickname}):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")
+
+    # delete member from all relations
+    db.delete_many("relations", {"teacher": member_nickname})
+    db.delete_many("relations", {"student": member_nickname})
+
+    # delete all plans of member
+    db.delete_many("plans", {"info.teacher": member_nickname})
+    db.delete_many("plans", {"info.student": member_nickname})
+
+    # delete all classes of member
+    db.delete_many("classes", {"info.teacher": member_nickname})
+    db.delete_many("classes", {"info.student": member_nickname})
+
     db.delete_one(members_collection_name, {"nickname": member_nickname})
     print(f"Member {member_nickname} deleted")
     return {"message": "Member deleted"}
@@ -28,9 +41,11 @@ async def delete_member(member_nickname: str):
 
 async def replace_member(member_nickname: str, new_member: dict):
     # update member in database
-    await delete_member(member_nickname)
+    if not db.find_one(members_collection_name, {"nickname": member_nickname}):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")
+    db.delete_one(members_collection_name, {"nickname": member_nickname})
     await post_member(new_member)
-    print(f"Member {member_nickname} updated")
+    print(f"Member {member_nickname} updated (not inserted)")
     return {"message": "Member updated"}
 
 

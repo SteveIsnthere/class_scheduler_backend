@@ -23,14 +23,14 @@ async def delete_plan(plan_id: str):
     return {"message": "Plan deleted"}
 
 
-async def update_plan(plan_id: str, new_plan: dict):
+async def replace_plan(plan_id: str, new_plan: dict):
     await delete_plan(plan_id)
     await post_plan(new_plan)
-    print(f"Plan {plan_id} updated")
+    print(f"Plan {plan_id} updated  (not inserted)")
     return {"message": "Plan updated"}
 
 
-async def get_plan_by_member(member_nickname: str):
+async def get_plans_by_member(member_nickname: str):
     member = db.find_one(members_collection_name, {"nickname": member_nickname})
     if not member:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")

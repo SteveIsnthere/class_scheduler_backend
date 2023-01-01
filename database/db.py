@@ -1,9 +1,21 @@
 import json
 
 import pymongo
+from bson import ObjectId
 
 connection_string = "mongodb://localhost:27017/"
 db_name = "class_scheduler"
+
+
+def obj_id_to_str(data):
+    if isinstance(data, dict):
+        return {obj_id_to_str(key): obj_id_to_str(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [obj_id_to_str(element) for element in data]
+    elif isinstance(data, ObjectId):
+        return str(data)
+    else:
+        return data
 
 
 def to_dict(obj):

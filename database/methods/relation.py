@@ -75,13 +75,16 @@ async def delete_relation(relation_id: str):
 
 async def replace_relation(relation_id: str, new_relation: dict):
     # update relation in database
-    await delete_relation(relation_id)
+    relation = db.find_one(relation_collection_name, {"_id": ObjectId(relation_id)})
+    if not relation:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Relation not found")
+    db.delete_one(relation_collection_name, {"_id": ObjectId(relation_id)})
     await post_relation(new_relation)
-    print(f"Relation {relation_id} updated")
+    print(f"Relation {relation_id} updated  (not inserted)")
     return {"message": "Relation updated"}
 
 
-async def get_relation_by_member(member_nickname: str):
+async def get_relations_by_member(member_nickname: str):
     # get relation from database
     # check if relation exists
     # check is member is a teacher or a student
