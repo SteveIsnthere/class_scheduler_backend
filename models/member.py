@@ -17,6 +17,5 @@ class Member (BaseModel):
     about: str = Field(..., description="About the member")
     noteToAdmin: str = Field(..., description="Note to admin")
     courses: List[Course] = Field(..., description="Courses taken by the member")
-    relations: List[Relation] = Field(..., description="Relations of the member")
     plans: List[ClassPlan] = Field(..., description="Plans of the member")
     unableTimes: List[UnableTime] = Field(..., description="Unable times of the member")

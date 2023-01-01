@@ -65,7 +65,6 @@ def dummy_member():
         about=fake.text(),
         noteToAdmin=fake.text(),
         courses=[],
-        relations=[],
         plans=[],
         unableTimes=[dummy_unable_time() for _ in range(fake.random_int(0, 5))],
     )

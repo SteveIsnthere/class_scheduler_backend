@@ -1,11 +1,10 @@
 from bson import ObjectId
 from fastapi import HTTPException, status
 
-from database.methods.course import get_all_courses, post_course, find_course_by_name
+from database.methods.course import post_course, find_course_by_name
 from database.methods.member import members_collection_name, get_member, replace_member
 from database.db import db, to_dict
 from models.course import Course
-from models.relation import Relation
 
 relation_collection_name = "relations"
 
@@ -34,12 +33,10 @@ async def post_relation(relation: dict):
     else:
         new_course = find_result
 
-    teacher["relations"].append(relation)
     if new_course not in teacher["courses"]:
         teacher["courses"].append(new_course)
     await replace_member(teacher["nickname"], teacher)
 
-    student["relations"].append(relation)
     if new_course not in student["courses"]:
         student["courses"].append(new_course)
     await replace_member(student["nickname"], student)
@@ -55,20 +52,8 @@ async def delete_relation(relation_id: str):
     relation = db.find_one(relation_collection_name, {"_id": ObjectId(relation_id)})
     if not relation:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Relation not found")
-    teacher = await get_member(relation["teacher"])
-    if not teacher:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Teacher not found")
-    student = await get_member(relation["student"])
-    if not student:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Student not found")
 
-    relation = Relation(**relation)
-    teacher["relations"].remove(relation)
-    student["relations"].remove(relation)
-    await replace_member(teacher["nickname"], teacher)
-    await replace_member(student["nickname"], student)
     db.delete_one(relation_collection_name, {"_id": ObjectId(relation_id)})
-
     print(f"Relation {relation_id} deleted")
     return {"message": "Relation deleted"}
 
