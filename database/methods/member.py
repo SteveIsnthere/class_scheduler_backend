@@ -56,6 +56,7 @@ async def get_member(member_nickname: str):
     if not member:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")
     member["_id"] = str(member["_id"])
+    member['password'] = '********'
     return member
 
 
@@ -64,4 +65,5 @@ async def get_all_members():
     members = list(db.find_many(members_collection_name, {}))
     for c in members:
         c["_id"] = str(c["_id"])
+        c['password'] = '********'
     return members

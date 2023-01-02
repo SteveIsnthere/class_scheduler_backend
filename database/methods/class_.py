@@ -37,6 +37,26 @@ async def replace_class(_id: str, class_: dict):
     return {"message": "Class updated"}
 
 
+def get_dates_in_one_week(week: int):
+    # get all dates in a week
+    # parameter week is the number of the week offset from the current week
+    # e.g. week=0 is the current week, week=1 is the next week, week=-1 is the previous week
+    # get the start time of the week
+    today = datetime.today()
+    start = today + timedelta(days=7 * week - today.weekday())
+    start = start.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # get the end time of the week
+    end = start + timedelta(days=7)
+
+    # get all dates in the week
+    dates = []
+    while start < end:
+        dates.append(str(start))
+        start += timedelta(days=1)
+    return dates
+
+
 async def get_one_week_of_classes(week: int):
     # get all classes in a week from database
     # parameter week is the number of the week offset from the current week

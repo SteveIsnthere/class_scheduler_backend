@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body
 from fastapi.encoders import jsonable_encoder
 
 from database.methods.class_ import post_class, delete_class, replace_class, get_one_week_of_classes, \
-    get_one_week_of_classes_of_a_member
+    get_one_week_of_classes_of_a_member, get_dates_in_one_week
 from models.class_instance import ClassInstance
 
 router = APIRouter()
@@ -26,6 +26,11 @@ async def update_class(class_id: str, new_class: ClassInstance = Body(...)):
     new_class = jsonable_encoder(new_class)
     await replace_class(class_id, new_class)
     return
+
+
+@router.get("/days_oneweek/{offset}")
+async def get_days_oneweek(offset: int):
+    return get_dates_in_one_week(offset)
 
 
 @router.get("/oneweek/{offset}")
