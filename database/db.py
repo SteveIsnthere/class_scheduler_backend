@@ -4,6 +4,7 @@ import pymongo
 from bson import ObjectId
 
 connection_string = "mongodb://localhost:27017/"
+# connection_string = "mongodb+srv://steve:Yuyu1984@clusterofsteve.k4plc.mongodb.net/?retryWrites=true&w=majority"
 db_name = "class_scheduler"
 
 
@@ -40,6 +41,9 @@ def to_dict(obj):
 class DataBase:
     def __init__(self):
         self.db = pymongo.MongoClient(connection_string)[db_name]
+        print("Connected to database")
+        print(f"Database name: {db_name}")
+        print(f"Collections: {self.get_collections()}")
 
     def get_collections(self):
         return self.db.list_collection_names()

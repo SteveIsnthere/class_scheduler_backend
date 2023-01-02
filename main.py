@@ -4,7 +4,7 @@ import asyncio
 import uvicorn
 
 # asyncio.run(generate_dummy_data(db))
-#
+
 
 if __name__ == "__main__":
     uvicorn.run("server.server:app", reload=True)
