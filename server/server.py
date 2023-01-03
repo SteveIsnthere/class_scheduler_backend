@@ -24,17 +24,16 @@ app.include_router(member_router, prefix="/member")
 app.include_router(relation_router, prefix="/relation")
 
 
-# @app.middleware("http")
-# async def add_process_time_header(request: Request, call_next):
-#     nickname, password = request.cookies.get("nickname"), request.cookies.get("password")
-#     print(nickname, password)
-#     if not auth_user(nickname, password):
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
-#     return await call_next(request)
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    if request.method != "OPTIONS":
+        nickname, password = request.headers.get("nickname"), request.headers.get("password")
+        print(auth_user(nickname, password))
+        if not auth_user(nickname, password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+    return await call_next(request)
 
 
 @app.get("/", tags=["Root"])
 async def read_root(request: Request):
-    nickname, password = request.cookies.get("nickname"), request.cookies.get("password")
-    print(nickname, password)
     return "You shall pass"

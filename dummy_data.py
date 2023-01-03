@@ -4,11 +4,11 @@ from database.db import to_dict
 from database.methods.class_ import post_class, get_one_week_of_classes_of_a_member, get_one_week_of_classes, \
     delete_class
 from database.methods.course import post_course, get_teachers_by_course, get_all_courses, get_students_by_course
-from database.methods.member import get_all_members, get_member, delete_member, post_member
+from database.methods.member import get_all_members, get_member, delete_member, post_member, replace_member
 from database.methods.plan import post_plan, get_plans_by_member
 from database.methods.relation import post_relation, get_all_relations, get_relations_by_member, delete_relation
 from models.course import Course
-from models.unable_time import UnableTime
+from models.time_period import TimePeriod
 from models.member import Member
 from models.class_plan import ClassPlan
 from models.class_instance import ClassInstance
@@ -66,7 +66,8 @@ def dummy_member():
         noteToAdmin=fake.text(),
         courses=[],
         plans=[],
-        unableTimes=[dummy_unable_time() for _ in range(fake.random_int(0, 5))],
+        unableTimes=[dummy_time_period() for _ in range(fake.random_int(0, 3))],
+        preferredTimes=[dummy_time_period() for _ in range(fake.random_int(0, 3))],
     )
 
 
@@ -123,6 +124,7 @@ def dummy_relations(courses, members):
             relation = Relation(
                 courseName=course.name,
                 price=course.defaultPrice,
+                salary=int(course.defaultPrice / 2),
                 teacher=teacher.nickname,
                 student=student.nickname,
                 classPerWeek=fake.random_int(1, 3),
@@ -141,13 +143,12 @@ def dummy_relations(courses, members):
     return relations
 
 
-def dummy_unable_time():
+def dummy_time_period():
     # return a UnableTime object with random values
     # startTime + duration < midnight
-    return UnableTime(
+    return TimePeriod(
         startTime=fake.date_time(),
         duration=fake.random_int(0, 10),
-        isInconvenient=fake.boolean(),
         weekDay=fake.random_int(1, 7),
     )
 
