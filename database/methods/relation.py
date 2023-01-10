@@ -34,6 +34,8 @@ async def post_relation(relation: dict):
         new_course = find_result
 
     if new_course not in teacher["courses"]:
+        print(teacher["courses"])
+        print(new_course)
         teacher["courses"].append(new_course)
     await replace_member(teacher["nickname"], teacher)
 
@@ -60,12 +62,9 @@ async def delete_relation(relation_id: str):
 
 async def replace_relation(relation_id: str, new_relation: dict):
     # update relation in database
-    relation = db.find_one(relation_collection_name, {"_id": ObjectId(relation_id)})
-    if not relation:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Relation not found")
-    db.delete_one(relation_collection_name, {"_id": ObjectId(relation_id)})
-    await post_relation(new_relation)
-    print(f"Relation {relation_id} updated  (not inserted)")
+    new_values = {"$set": new_relation}
+    db.update_one(relation_collection_name, {"_id": ObjectId(relation_id)}, new_values)
+    print(f"Relation {relation_id} updated")
     return {"message": "Relation updated"}
 
 

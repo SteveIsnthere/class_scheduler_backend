@@ -15,12 +15,6 @@ async def create_course(new_course: Course = Body(...)):
     return
 
 
-@router.get("/members/{course_name}")
-async def get_members(course_name: str):
-    result = await get_members_by_course(course_name)
-    return result
-
-
 @router.get("/teachers/{course_name}")
 async def get_teachers(course_name: str):
     result = await get_teachers_by_course(course_name)

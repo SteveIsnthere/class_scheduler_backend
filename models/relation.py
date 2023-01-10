@@ -8,3 +8,4 @@ class Relation(BaseModel):
     teacher: str = Field(..., description="Teacher of the class")
     student: str = Field(..., description="Student of the class")
     classPerWeek: int = Field(..., description="Class per week of the class")
+    duration: float = Field(..., description="Duration of the class")

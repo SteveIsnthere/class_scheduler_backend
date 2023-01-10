@@ -41,11 +41,13 @@ async def delete_member(member_nickname: str):
 
 async def replace_member(member_nickname: str, new_member: dict):
     # update member in database
+    # check if member exists
     if not db.find_one(members_collection_name, {"nickname": member_nickname}):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")
-    db.delete_one(members_collection_name, {"nickname": member_nickname})
-    await post_member(new_member)
-    print(f"Member {member_nickname} updated (not inserted)")
+    new_member.pop('_id', None)
+    new_values = {"$set": new_member}
+    db.update(members_collection_name, {"nickname": member_nickname}, new_values)
+    print(f"Member {member_nickname} updated")
     return {"message": "Member updated"}
 
 

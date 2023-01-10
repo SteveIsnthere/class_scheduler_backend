@@ -1,4 +1,6 @@
 import faker
+from database.db import db
+import asyncio
 
 from database.db import to_dict
 from database.methods.class_ import post_class, get_one_week_of_classes_of_a_member, get_one_week_of_classes, \
@@ -71,24 +73,20 @@ def dummy_member():
     )
 
 
-def dummy_class_plan(members, courses, relation):
+def dummy_class_plan(courses, relation, weeks):
+    days = str(weeks * 7)
     # return a ClassPlan object with random values
     course_name = relation.courseName
     course = [course for course in courses if course.name == course_name][0]
-    # make a class plan that start in next 14 days
+    # declare a time in next 14 days and between 11am and 6pm
+    start_time = fake.date_time_between(start_date="-" + days + "d", end_date="+" + days + "d", tzinfo=None)
+    start_time = start_time.replace(hour=fake.random_int(11, 18), minute=0, second=0, microsecond=0)
     plan = ClassPlan(
         weekDay=fake.random_int(1, 7),
         info=relation,
-        startTime=fake.date_time_between(start_date="-100d", end_date="+14d"),
+        startTime=start_time,
         duration=course.defaultDuration,
     )
-
-    # add plan to teacher and student
-    # find teacher and student from members
-    teacher = [member for member in members if member.nickname == relation.teacher][0]
-    student = [member for member in members if member.nickname == relation.student][0]
-    teacher.plans.append(plan)
-    student.plans.append(plan)
 
     return plan
 
@@ -106,10 +104,10 @@ def dummy_class_instance(class_plan):
     )
 
 
-def dummy_relations(courses, members):
+def dummy_relations(courses, members, amount):
     relations = []
     for member in members:
-        for i in range(fake.random_int(1, 7)):
+        for i in range(fake.random_int(1, amount)):
             # for each member, pick 1-3 courses
             # return a Relation object with random values
             course = courses[fake.random_int(0, len(courses) - 1)]
@@ -121,18 +119,25 @@ def dummy_relations(courses, members):
             students = [member for member in members if not member.isTeacher]
             student = students[fake.random_int(0, len(students) - 1)]
 
+            if member.isTeacher:
+                teacher = member
+            else:
+                student = member
+
             relation = Relation(
                 courseName=course.name,
                 price=course.defaultPrice,
                 salary=int(course.defaultPrice / 2),
                 teacher=teacher.nickname,
                 student=student.nickname,
-                classPerWeek=fake.random_int(1, 3),
+                classPerWeek=fake.random_int(1, 4),
+                duration=course.defaultDuration,
             )
 
             unique = True
             for r in relations:
-                if r.courseName == relation.courseName and r.teacher == relation.teacher and r.student == relation.student:
+                if r.courseName == relation.courseName and r.teacher == relation.teacher and r.student == \
+                        relation.student:
                     unique = False
                     break
 
@@ -153,23 +158,29 @@ def dummy_time_period():
     )
 
 
-async def generate_dummy_data(db):
+async def generate_dummy_data(database):
     # return a list of dummy data
+    weeks_of_data_to_generate = 3
     courses = dummy_courses()
     members = [dummy_member() for _ in range(30)]
-    relations = dummy_relations(courses, members)
+    # find a member whose attribute isTeacher = True and change its nickname to "test"
+    for member in members:
+        if member.isTeacher:
+            member.nickname = "test"
+            break
+    relations = dummy_relations(courses, members, 3)
     # for each relation, create 1-5 class plans
-    plans = [dummy_class_plan(members, courses, relation) for relation in relations for _ in
-             range(fake.random_int(1, 3))]
+    plans = [dummy_class_plan(courses, relation, weeks_of_data_to_generate) for relation in relations for _ in
+             range(fake.random_int(2 * weeks_of_data_to_generate, 8 * weeks_of_data_to_generate))]
     # for each plan, create 0-1 class instance
     classes = [dummy_class_instance(plan) for plan in plans for _ in range(fake.random_int(0, 1))]
 
     # insert dummy data into database after removing all data
-    db.delete_many("courses", {})
-    db.delete_many("members", {})
-    db.delete_many("relations", {})
-    db.delete_many("plans", {})
-    db.delete_many("classes", {})
+    database.delete_many("courses", {})
+    database.delete_many("members", {})
+    database.delete_many("relations", {})
+    database.delete_many("plans", {})
+    database.delete_many("classes", {})
 
     for course in courses:
         await post_course(to_dict(course))
@@ -189,15 +200,18 @@ async def generate_dummy_data(db):
     print(f"plans: {len(plans)}")
     print(f"classes: {len(classes)}")
 
-    r = db.find_one("classes", {})
+    r = database.find_one("classes", {})
 
-    members = await get_all_members()
-    relations = await get_all_relations()
-    courses = await get_all_courses()
-    classes_this_week = await get_one_week_of_classes(0)
+    # members = await get_all_members()
+    # relations = await get_all_relations()
+    # courses = await get_all_courses()
+    # classes_this_week = await get_one_week_of_classes(0)
+    #
+    # d = await get_plans_by_member(members[0]["nickname"])
+    #
+    # await delete_relation(str(relations[0]["_id"]))
+    # await delete_class(str(classes_this_week[0]["_id"]))
+    # await delete_member(members[0]["nickname"])
 
-    d = await get_plans_by_member(members[0]["nickname"])
 
-    await delete_relation(str(relations[0]["_id"]))
-    await delete_class(str(classes_this_week[0]["_id"]))
-    await delete_member(members[0]["nickname"])
+asyncio.run(generate_dummy_data(db))

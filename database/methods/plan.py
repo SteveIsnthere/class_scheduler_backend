@@ -9,7 +9,8 @@ plans_collection_name = "plans"
 
 async def post_plan(plan: dict):
     if db.find_one(plans_collection_name, {"startTime": plan["startTime"], "info": plan["info"]}):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Plan already exists")
+        # raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Plan already exists")
+        return {"message": "Plan already exists"}
     db.insert(plans_collection_name, plan)
     print(f"Plan {plan['_id']} inserted")
     return {"message": "Plan added"}
@@ -24,15 +25,15 @@ async def delete_plan(plan_id: str):
 
 
 async def replace_plan(plan_id: str, new_plan: dict):
-    await delete_plan(plan_id)
-    await post_plan(new_plan)
-    print(f"Plan {plan_id} updated  (not inserted)")
+    new_values = {"$set": new_plan}
+    db.update(plans_collection_name, {"_id": ObjectId(plan_id)}, new_values)
+    print(f"Plan {plan_id} updated")
     return {"message": "Plan updated"}
 
 
 async def get_plans_by_member(member_nickname: str):
-    member = db.find_one(members_collection_name, {"nickname": member_nickname})
-    if not member:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Member not found")
-    member["_id"] = str(member["_id"])
-    return list(member["plans"])
+    plans = db.find(plans_collection_name, {"info.teacher": member_nickname})
+    plans.extend(db.find(plans_collection_name, {"info.student": member_nickname}))
+    for plan in plans:
+        plan["_id"] = str(plan["_id"])
+    return plans

@@ -11,7 +11,10 @@ async def post_class(class_: dict):
     # insert class into database
     # check if class already exists
     if db.find_one(classes_collection_name, {"startTime": class_["startTime"], "info": class_["info"]}):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Class already exists")
+        # raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Class already exists")
+        return {"message": "Class already exists"}
+    if type(class_['startTime']) == str:
+        class_['startTime'] = datetime.fromisoformat(class_['startTime'])
     db.insert(classes_collection_name, class_)
     print(f"Class {class_} inserted")
     return {"message": "Class added"}
@@ -31,10 +34,12 @@ async def delete_class(class_id: str):
 async def replace_class(_id: str, class_: dict):
     # update class in database
     # check if class exists
-    await delete_class(_id)
-    await post_class(class_)
-    print(f"Class {class_} updated")
-    return {"message": "Class updated"}
+    _id = ObjectId(_id)
+    class_['startTime'] = datetime.fromisoformat(class_['startTime'])
+    new_values = {"$set": class_}
+    db.update(classes_collection_name, {"_id": _id}, new_values)
+    print(f"Class {_id} replaced")
+    return {"message": "Class replaced"}
 
 
 def get_dates_in_one_week(week: int):

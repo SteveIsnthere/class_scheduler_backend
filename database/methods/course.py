@@ -17,15 +17,10 @@ async def post_course(course: dict):
 
 
 async def get_members_by_course(course_name: str):
-    # get teachers of a course from database
+    # get members of a course from database
     # check if course exists
-    course = db.find_one(courses_collection_name, {"name": course_name})
-    if not course:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Course not found")
-
-    teachers = list(db.find_many(members_collection_name, {"relations": {"$elemMatch": {"courseName": course_name}}}))
-
-    return obj_id_to_str(teachers)
+    members = list(db.find_many(members_collection_name, {"courses.name": course_name}))
+    return obj_id_to_str(members)
 
 
 async def get_teachers_by_course(course_name: str):
