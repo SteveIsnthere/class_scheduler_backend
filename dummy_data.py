@@ -168,7 +168,7 @@ async def generate_dummy_data(database):
         if member.isTeacher:
             member.nickname = "test"
             break
-    relations = dummy_relations(courses, members, 3)
+    relations = dummy_relations(courses, members, 2)
     # for each relation, create 1-5 class plans
     plans = [dummy_class_plan(courses, relation, weeks_of_data_to_generate) for relation in relations for _ in
              range(fake.random_int(2 * weeks_of_data_to_generate, 8 * weeks_of_data_to_generate))]
