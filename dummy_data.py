@@ -166,7 +166,9 @@ async def generate_dummy_data(database):
     # find a member whose attribute isTeacher = True and change its nickname to "test"
     for member in members:
         if member.isTeacher:
-            member.nickname = "test"
+            member.nickname = "Steve1984"
+            member.password = "test"
+            member.name = "Steve Wang"
             break
     relations = dummy_relations(courses, members, 2)
     # for each relation, create 1-5 class plans

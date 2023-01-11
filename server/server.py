@@ -26,17 +26,17 @@ app.include_router(member_router, prefix="/member")
 app.include_router(relation_router, prefix="/relation")
 
 
-# @app.middleware("http")
-# async def add_process_time_header(request: Request, call_next):
-#     if request.method != "OPTIONS":
-#         nickname, password = request.headers.get("nickname"), request.headers.get("password")
-#         if not auth_user(nickname, password):
-#             # raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
-#             # return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
-#             return JSONResponse(status_code=401, content={"detail": "Invalid username or password"},
-#                                 headers={"Access-Control-Allow-Origin": "http://localhost:4200",
-#                                          "Access-Control-Allow-Credentials": "true"})
-#     return await call_next(request)
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    if request.method != "OPTIONS":
+        nickname, password = request.headers.get("nickname"), request.headers.get("password")
+        if not auth_user(nickname, password):
+            # raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+            # return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+            return JSONResponse(status_code=401, content={"detail": "Invalid username or password"},
+                                headers={"Access-Control-Allow-Origin": "http://localhost:4200",
+                                         "Access-Control-Allow-Credentials": "true"})
+    return await call_next(request)
 
 
 @app.get("/", tags=["Root"])
