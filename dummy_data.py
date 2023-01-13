@@ -183,6 +183,7 @@ async def generate_dummy_data(database):
     database.delete_many("relations", {})
     database.delete_many("plans", {})
     database.delete_many("classes", {})
+    database.delete_many("marked_members", {})
 
     for course in courses:
         await post_course(to_dict(course))
