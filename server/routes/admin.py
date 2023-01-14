@@ -1,13 +1,5 @@
 from fastapi import APIRouter, Body
 from fastapi.encoders import jsonable_encoder
-
-from database.methods.course import post_course, get_members_by_course, get_teachers_by_course, get_students_by_course, \
-    get_all_courses, find_course_by_name
-from models.course import Course
-from bson import ObjectId
-from fastapi import HTTPException, status
-from database.methods.member import members_collection_name
-from datetime import datetime, timedelta
 from database.db import db, obj_id_to_str
 
 router = APIRouter()

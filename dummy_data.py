@@ -10,11 +10,14 @@ from database.methods.member import get_all_members, get_member, delete_member, 
 from database.methods.plan import post_plan, get_plans_by_member
 from database.methods.relation import post_relation, get_all_relations, get_relations_by_member, delete_relation
 from models.course import Course
+from models.message import Message
 from models.time_period import TimePeriod
 from models.member import Member
 from models.class_plan import ClassPlan
 from models.class_instance import ClassInstance
 from models.relation import Relation
+from server.routes.admin import add_marked_member
+from server.routes.message import post_message
 
 fake = faker.Faker()
 
@@ -158,18 +161,48 @@ def dummy_time_period():
     )
 
 
+def dummy_marked_members(members):
+    # return a list of Member objects with random values
+    # mark 1/3 of members as marked
+    marked_members = []
+    for member in members:
+        if fake.boolean():
+            marked_members.append(member.nickname)
+    return marked_members
+
+
+def dummy_messages(members):
+    # return a list of Message objects with random values
+    messages = []
+    for member in members:
+        for i in range(fake.random_int(0, 10)):
+            recipient = members[fake.random_int(0, len(members) - 1)]
+            if member.nickname != recipient.nickname:
+                messages.append(Message(
+                    senderNickName=member.nickname,
+                    receiverNickName=recipient.nickname,
+                    # set time to be in the past
+                    time=fake.date_time_between(start_date="-14d", end_date="now", tzinfo=None),
+                    content=fake.text(),
+                ))
+    return messages
+
+
 async def generate_dummy_data(database):
     # return a list of dummy data
     weeks_of_data_to_generate = 3
     courses = dummy_courses()
     members = [dummy_member() for _ in range(30)]
-    # find a member whose attribute isTeacher = True and change its nickname to "test"
     for member in members:
         if member.isTeacher:
             member.nickname = "Steve1984"
             member.password = "test"
             member.name = "Steve Wang"
             break
+    marked_members = dummy_marked_members(members)
+    messages = dummy_messages(members)
+    # find a member whose attribute isTeacher = True and change its nickname to "test"
+
     relations = dummy_relations(courses, members, 2)
     # for each relation, create 1-5 class plans
     plans = [dummy_class_plan(courses, relation, weeks_of_data_to_generate) for relation in relations for _ in
@@ -184,37 +217,30 @@ async def generate_dummy_data(database):
     database.delete_many("plans", {})
     database.delete_many("classes", {})
     database.delete_many("marked_members", {})
+    database.delete_many("messages", {})
 
     for course in courses:
         await post_course(to_dict(course))
     for member in members:
         await post_member(to_dict(member))
+    for member_nickname in marked_members:
+        await add_marked_member(member_nickname)
     for relation in relations:
         await post_relation(to_dict(relation))
     for plan in plans:
         await post_plan(to_dict(plan))
     for c in classes:
         await post_class(to_dict(c))
+    for message in messages:
+        await post_message(to_dict(message))
 
     # print out the number of each type of data
     print(f"courses: {len(courses)}")
     print(f"members: {len(members)}")
+    print(f"marked members: {len(marked_members)}")
     print(f"relations: {len(relations)}")
     print(f"plans: {len(plans)}")
     print(f"classes: {len(classes)}")
-
-    r = database.find_one("classes", {})
-
-    # members = await get_all_members()
-    # relations = await get_all_relations()
-    # courses = await get_all_courses()
-    # classes_this_week = await get_one_week_of_classes(0)
-    #
-    # d = await get_plans_by_member(members[0]["nickname"])
-    #
-    # await delete_relation(str(relations[0]["_id"]))
-    # await delete_class(str(classes_this_week[0]["_id"]))
-    # await delete_member(members[0]["nickname"])
 
 
 asyncio.run(generate_dummy_data(db))

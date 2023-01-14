@@ -8,6 +8,7 @@ from server.routes.course import router as course_router
 from server.routes.plan import router as plan_router
 from server.routes.member import router as member_router
 from server.routes.relation import router as relation_router
+from server.routes.message import router as message_router
 from server.routes.admin import router as admin_router
 
 app = FastAPI()
@@ -25,6 +26,7 @@ app.include_router(course_router, prefix="/course")
 app.include_router(plan_router, prefix="/plan")
 app.include_router(member_router, prefix="/member")
 app.include_router(relation_router, prefix="/relation")
+app.include_router(message_router, prefix="/message")
 app.include_router(admin_router, prefix="/admin")
 
 
