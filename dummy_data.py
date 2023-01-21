@@ -16,6 +16,9 @@ from models.member import Member
 from models.class_plan import ClassPlan
 from models.class_instance import ClassInstance
 from models.relation import Relation
+from models.unable_time import UnableTime
+from models.post import Post
+from models.post_comment import PostComment
 from server.routes.admin import add_marked_member
 from server.routes.message import post_message
 
@@ -186,6 +189,24 @@ def dummy_messages(members):
                     content=fake.text(),
                 ))
     return messages
+
+def dummy_posts(members):
+    # return a list of Post objects with random values
+    posts = []
+    for member in members:
+        for i in range(fake.random_int(0, 2)):
+            comments = []
+            for j in range(fake.random_int(0, 5)):
+                commenter = members[fake.random_int(0, len(members) - 1)]
+                comments.append(PostComment(
+                    authorNickName=commenter.nickname,
+                    content=fake.text(),
+                    likes = fake.random_int(0, 10),
+                ))
+            posts.append(Post(
+
+            ))
+    return posts
 
 
 async def generate_dummy_data(database):
