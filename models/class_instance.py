@@ -1,5 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field
+
+from pydantic import BaseModel, Field
 
 from models.relation import Relation
 
@@ -12,4 +13,3 @@ class ClassInstance(BaseModel):
     comment: str = Field(..., description="Comment of the class")
     isOnline: bool = Field(..., description="Whether the class is online")
     info: Relation = Field(..., description="Info of the class")
-

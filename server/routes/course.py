@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body
 from fastapi.encoders import jsonable_encoder
 
-from database.methods.course import post_course, get_members_by_course, get_teachers_by_course, get_students_by_course, \
+from database.methods.course import post_course, get_teachers_by_course, get_students_by_course, \
     get_all_courses, find_course_by_name
 from models.course import Course
 

@@ -1,9 +1,8 @@
-from pydantic import BaseModel, EmailStr, Field
 from typing import List
 
-from models.class_plan import ClassPlan
+from pydantic import BaseModel, EmailStr, Field
+
 from models.course import Course
-from models.relation import Relation
 from models.time_period import TimePeriod
 
 

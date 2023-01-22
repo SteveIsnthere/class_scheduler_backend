@@ -1,10 +1,8 @@
-import json
-
 import pymongo
 from bson import ObjectId
 
-# connection_string = "mongodb+srv://cluster0:jGG8zgCUanqjpqEC@cluster0.rf93vw7.mongodb.net/?retryWrites=true&w=majority"
-connection_string = "mongodb://localhost:27017/"
+connection_string = "mongodb+srv://cluster0:jGG8zgCUanqjpqEC@cluster0.rf93vw7.mongodb.net/?retryWrites=true&w=majority"
+# connection_string = "mongodb://localhost:27017/"
 db_name = "class_scheduler"
 
 

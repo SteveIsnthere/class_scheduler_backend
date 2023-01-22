@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
+
 from bson import ObjectId
 from fastapi import HTTPException, status
-from database.methods.member import members_collection_name
-from datetime import datetime, timedelta
+
 from database.db import db
+from database.methods.member import members_collection_name
 
 classes_collection_name = "classes"
 

@@ -1,7 +1,7 @@
-from bson import ObjectId
 from fastapi import HTTPException, status
-from database.methods.member import members_collection_name
+
 from database.db import db, obj_id_to_str
+from database.methods.member import members_collection_name
 
 courses_collection_name = "courses"
 

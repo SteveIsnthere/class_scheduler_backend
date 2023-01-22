@@ -6,7 +6,6 @@ from fastapi import APIRouter, Body
 from fastapi.encoders import jsonable_encoder
 
 from database.db import db, obj_id_to_str
-from models.message import Message
 
 router = APIRouter()
 

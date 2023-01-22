@@ -1,9 +1,9 @@
 from bson import ObjectId
 from fastapi import HTTPException, status
 
+from database.db import db, to_dict
 from database.methods.course import post_course, find_course_by_name
 from database.methods.member import members_collection_name, get_member, replace_member
-from database.db import db, to_dict
 from models.course import Course
 
 relation_collection_name = "relations"

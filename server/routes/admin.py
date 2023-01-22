@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
+
 from database.db import db, obj_id_to_str
 
 router = APIRouter()
@@ -30,6 +31,3 @@ async def delete_marked_member(nickname: str):
     mark_record = {"nickname": nickname}
     db.delete_one('marked_members', mark_record)
     return {"marked member" + nickname + "deleted"}
-
-
-

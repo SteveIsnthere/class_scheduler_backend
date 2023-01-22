@@ -1,24 +1,23 @@
-import faker
-from database.db import db
 import asyncio
 
+import faker
+
+from database.db import db
 from database.db import to_dict
-from database.methods.class_ import post_class, get_one_week_of_classes_of_a_member, get_one_week_of_classes, \
-    delete_class
-from database.methods.course import post_course, get_teachers_by_course, get_all_courses, get_students_by_course
-from database.methods.member import get_all_members, get_member, delete_member, post_member, replace_member
-from database.methods.plan import post_plan, get_plans_by_member
-from database.methods.relation import post_relation, get_all_relations, get_relations_by_member, delete_relation
-from models.course import Course
-from models.message import Message
-from models.time_period import TimePeriod
-from models.member import Member
-from models.class_plan import ClassPlan
+from database.methods.class_ import post_class
+from database.methods.course import post_course
+from database.methods.member import post_member
+from database.methods.plan import post_plan
+from database.methods.relation import post_relation
 from models.class_instance import ClassInstance
-from models.relation import Relation
-from models.unable_time import UnableTime
+from models.class_plan import ClassPlan
+from models.course import Course
+from models.member import Member
+from models.message import Message
 from models.post import Post
 from models.post_comment import PostComment
+from models.relation import Relation
+from models.time_period import TimePeriod
 from server.routes.admin import add_marked_member
 from server.routes.message import post_message
 
@@ -190,6 +189,7 @@ def dummy_messages(members):
                 ))
     return messages
 
+
 def dummy_posts(members):
     # return a list of Post objects with random values
     posts = []
@@ -201,7 +201,7 @@ def dummy_posts(members):
                 comments.append(PostComment(
                     authorNickName=commenter.nickname,
                     content=fake.text(),
-                    likes = fake.random_int(0, 10),
+                    likes=fake.random_int(0, 10),
                 ))
             posts.append(Post(
 

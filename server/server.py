@@ -1,15 +1,13 @@
-from fastapi import FastAPI, Request, HTTPException, status
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
 
-from database.auth import auth_user
+from server.routes.admin import router as admin_router
 from server.routes.class_ import router as class_router
 from server.routes.course import router as course_router
-from server.routes.plan import router as plan_router
 from server.routes.member import router as member_router
-from server.routes.relation import router as relation_router
 from server.routes.message import router as message_router
-from server.routes.admin import router as admin_router
+from server.routes.plan import router as plan_router
+from server.routes.relation import router as relation_router
 
 app = FastAPI()
 

@@ -1,6 +1,5 @@
 from bson import ObjectId
 from fastapi import HTTPException, status
-from database.methods.member import members_collection_name
 
 from database.db import db
 
