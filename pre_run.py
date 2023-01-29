@@ -1,6 +1,6 @@
 import pip
 
-packages_to_install = ['uvicorn', 'Faker', 'pymongo', 'fastapi', 'pydantic']
+packages_to_install = ['uvicorn', 'Faker', 'pymongo', 'fastapi', 'pydantic', 'pydantic[email]']
 
 for package in packages_to_install:
     try:
