@@ -1,0 +1,1 @@
+pipenv run uvicorn main:app --port 8852
